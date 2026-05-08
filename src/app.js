@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { config } from "./config.js";
 import { answerQuestion, indexDocument } from "./rag/rag.js";
+import { answerCache } from "./rag/cache.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -20,6 +21,12 @@ const upload = multer({
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
+});
+
+app.post("/api/cache/clear", (req, res) => {
+  const size = answerCache.size;
+  answerCache.clear();
+  res.json({ cleared: size });
 });
 
 app.post("/api/upload", upload.single("file"), async (req, res) => {
