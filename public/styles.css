@@ -20,9 +20,12 @@ body {
   background: var(--bg);
   color: var(--ink);
   min-height: 100vh;
-  padding: 32px 20px 48px;
+  height: 100vh;
+  padding: 24px 28px 20px;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .bg-orb {
@@ -54,8 +57,10 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  max-width: 1120px;
-  margin: 0 auto 32px;
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto 20px;
+  flex-shrink: 0;
 }
 
 .eyebrow {
@@ -74,7 +79,7 @@ h1 {
 
 .subtitle {
   color: var(--muted);
-  /* max-width: 520px; */
+  max-width: 720px;
 }
 
 .badge {
@@ -88,20 +93,28 @@ h1 {
 }
 
 .grid {
-  max-width: 1120px;
+  max-width: 1320px;
+  width: 100%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+  flex: 1;
+  min-height: 0;
 }
 
 .card {
   background: var(--card);
   border-radius: 18px;
-  padding: 24px;
+  padding: 22px;
   box-shadow: var(--shadow);
   border: 1px solid var(--line);
   animation: rise 0.7s ease both;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 #upload-card {
@@ -168,11 +181,15 @@ form {
 .file-meta {
   display: grid;
   gap: 4px;
+  min-width: 0;
 }
 
 .file-name {
   font-size: 14px;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .file-hint {
@@ -223,18 +240,25 @@ button {
   border-radius: 12px;
   background: #fdf8f0;
   font-size: 13px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .doc-meta code {
   font-family: "Space Mono", monospace;
   font-size: 12px;
+  word-break: break-all;
 }
 
 .chat {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  min-height: 220px;
-  max-height: 340px;
+  min-height: 160px;
+  max-height: none;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 6px;
 }
@@ -246,6 +270,9 @@ button {
   background: #fff;
   font-size: 14px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .message.user {
@@ -258,6 +285,13 @@ button {
   border-color: #c3ece6;
 }
 
+.message.pending {
+  background: #f7f3ec;
+  border-color: #efe1cc;
+  color: var(--muted);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
 .message .sources {
   margin-top: 8px;
   font-family: "Space Mono", monospace;
@@ -268,6 +302,7 @@ button {
 .ask {
   grid-template-columns: 1fr auto;
   align-items: center;
+  margin-top: auto;
 }
 
 .tiny {
@@ -276,11 +311,13 @@ button {
 }
 
 .footer {
-  max-width: 1120px;
-  margin: 32px auto 0;
+  max-width: 1320px;
+  width: 100%;
+  margin: 16px auto 0;
   text-align: center;
   font-size: 12px;
   color: var(--muted);
+  flex-shrink: 0;
 }
 
 @keyframes float {
@@ -307,7 +344,23 @@ button {
   }
 }
 
-@media (max-width: 720px) {
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@media (max-width: 980px) {
+  body {
+    height: auto;
+    overflow-y: auto;
+    padding: 20px 18px 28px;
+  }
+
   .hero {
     flex-direction: column;
   }
@@ -318,9 +371,14 @@ button {
 
   .ask {
     grid-template-columns: 1fr;
+    margin-top: 12px;
   }
 
   .file-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
     grid-template-columns: 1fr;
   }
 }

@@ -16,27 +16,53 @@ function setStatus(message, isError = false) {
   uploadStatus.style.color = isError ? "#b24a2f" : "";
 }
 
-function appendMessage(role, text, sources) {
+function renderSources(wrapper, sources) {
+  const existing = wrapper.querySelector(".sources");
+  if (existing) {
+    existing.remove();
+  }
+  if (!sources || !sources.length) {
+    return;
+  }
+  const sourceEl = document.createElement("div");
+  sourceEl.className = "sources";
+  const formatted = sources
+    .map((source) => {
+      const page = source.page ? `p${source.page}` : "p?";
+      return `[${source.index}] ${page}`;
+    })
+    .join(" ");
+  sourceEl.textContent = `Sources: ${formatted}`;
+  wrapper.appendChild(sourceEl);
+}
+
+function appendMessage(role, text, sources, options = {}) {
   const wrapper = document.createElement("div");
   wrapper.className = `message ${role}`;
+  if (options.pending) {
+    wrapper.classList.add("pending");
+  }
   const content = document.createElement("div");
+  content.className = "message-content";
   content.textContent = text;
   wrapper.appendChild(content);
-
-  if (sources && sources.length) {
-    const sourceEl = document.createElement("div");
-    sourceEl.className = "sources";
-    const formatted = sources
-      .map((source) => {
-        const page = source.page ? `p${source.page}` : "p?";
-        return `[${source.index}] ${page}`;
-      })
-      .join(" ");
-    sourceEl.textContent = `Sources: ${formatted}`;
-    wrapper.appendChild(sourceEl);
-  }
+  renderSources(wrapper, sources);
 
   chatLog.appendChild(wrapper);
+  chatLog.scrollTop = chatLog.scrollHeight;
+  return wrapper;
+}
+
+function updateMessage(wrapper, text, sources) {
+  if (!wrapper) {
+    return;
+  }
+  const content = wrapper.querySelector(".message-content");
+  if (content) {
+    content.textContent = text;
+  }
+  renderSources(wrapper, sources);
+  wrapper.classList.remove("pending");
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 
@@ -105,6 +131,9 @@ askForm.addEventListener("submit", async (event) => {
 
   appendMessage("user", question);
   questionInput.value = "";
+  const pending = appendMessage("assistant", "Thinking...", null, {
+    pending: true
+  });
 
   try {
     const response = await fetch("/api/ask", {
@@ -121,8 +150,8 @@ askForm.addEventListener("submit", async (event) => {
     if (!response.ok) {
       throw new Error(data.error || "Failed to answer");
     }
-    appendMessage("assistant", data.answer, data.citations);
+    updateMessage(pending, data.answer, data.citations);
   } catch (error) {
-    appendMessage("assistant", error.message);
+    updateMessage(pending, error.message);
   }
 });

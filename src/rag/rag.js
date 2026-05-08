@@ -27,7 +27,7 @@ async function writeTempFile(buffer, originalName) {
   const safeName = String(originalName || "upload")
     .replace(/[^a-zA-Z0-9._-]/g, "_")
     .slice(0, 80);
-  const dir = path.join(os.tmpdir(), "notebooklm-rag");
+  const dir = path.join(os.tmpdir(), "sst-genai-ass-3-rag-notebook-lm");
   await fs.mkdir(dir, { recursive: true });
   const filePath = path.join(
     dir,
@@ -192,9 +192,11 @@ export async function answerQuestion({ docId, question }) {
   }
 
   const systemPrompt =
-    "You answer using only the provided context. " +
-    "If the answer is not in the context, say you could not find it in the document. " +
-    "Be concise and cite sources like [1] or [2].";
+    "You are a document Q&A assistant. " +
+    "Answer ONLY using the context provided below. " +
+    "If the answer is not in the context, say: 'I could not find that in the document.' " +
+    "Always write complete, grammatically correct sentences — never stop mid-sentence or end a response with a comma. " +
+    "Cite evidence inline using [1], [2], etc.";
 
   const chatClient = getChatClient();
   const response = await chatClient.chat.completions.create({
@@ -213,7 +215,7 @@ export async function answerQuestion({ docId, question }) {
     max_tokens: config.maxOutputTokens
   });
 
-  const answer = response.choices?.[0]?.message?.content?.trim();
+  const answer = response.choices?.[0]?.message?.content?.trim() || "";
   const result = {
     answer: answer || "No response generated.",
     citations,
