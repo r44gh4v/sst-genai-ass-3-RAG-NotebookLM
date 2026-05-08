@@ -1,4 +1,4 @@
-# NotebookLM RAG (Assignment 03)
+# SST GenAI NotebookLM RAG (Assignment 3)
 
 A minimal RAG app that lets a user upload a PDF or plain text file and ask grounded questions. 
 

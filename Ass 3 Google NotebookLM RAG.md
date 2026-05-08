@@ -1,10 +1,10 @@
-# **Assignment 03 — Google NotebookLM RAG**
+# **SST GenAI Assignment 3 - Google NotebookLM RAG**
 
 ## **Problem Statement**
 
-Build your own version of **Google NotebookLM** — a RAG-powered application where a user can upload any document and have a conversation with it.
+Build your own version of **Google NotebookLM** - a RAG-powered application where a user can upload any document and have a conversation with it.
 
-The user uploads a file. The system processes it, stores it intelligently, and allows the user to ask natural language questions — getting back answers grounded in the document's actual content.
+The user uploads a file. The system processes it, stores it intelligently, and allows the user to ask natural language questions - getting back answers grounded in the document's actual content.
 
 ## **What You Are Building**
 
@@ -14,16 +14,16 @@ A full RAG pipeline with a working interface where:
 * The system chunks, embeds, and indexes the document into a vector database  
 * The user can ask questions about the document  
 * The system retrieves the most relevant chunks and generates a grounded answer using an LLM  
-* Answers must come from the document — not from the LLM's general knowledge
+* Answers must come from the document - not from the LLM's general knowledge
 
 
 ## **What is Expected**
 
-* A working application — CLI or simple web UI, your choice  
+* A working application - CLI or simple web UI, your choice  
 * The full RAG pipeline must be implemented end to end: ingestion → chunking → embedding → storage → retrieval → generation  
 * At least one chunking strategy must be implemented and clearly documented  
 * A vector database must be used for storing and retrieving embeddings  
-* The LLM must use retrieved context to answer — not answer from memory alone  
+* The LLM must use retrieved context to answer - not answer from memory alone  
 * The app must handle a document it has never seen before and answer questions correctly from it
 
 ## 
@@ -32,19 +32,19 @@ A full RAG pipeline with a working interface where:
 
 Submit both of the following on the course portal:
 
-1. **GitHub Repository Link** — must be public  
-2. **Live Project Link** — deployed and accessible without any local setup
+1. **GitHub Repository Link** - must be public  
+2. **Live Project Link** - deployed and accessible without any local setup
 
 Submissions missing either will not be evaluated.
 
-## **Marking Scheme — 10 Points**
+## **Marking Scheme - 10 Points**
 
 | Criterion | Marks |
 | ----- | ----- |
 | GitHub Repository | 2 |
 | Live Project | 2 |
 | RAG Pipeline (chunking → embedding → retrieval → generation) | 3 |
-| Answer Quality — grounded in document, not hallucinated | 2 |
+| Answer Quality - grounded in document, not hallucinated | 2 |
 | Code Quality & Documentation | 1 |
 
 Code File 👏
