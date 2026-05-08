@@ -1,10 +1,13 @@
 const uploadForm = document.getElementById("upload-form");
 const fileInput = document.getElementById("file-input");
+const fileName = document.getElementById("file-name");
 const uploadStatus = document.getElementById("upload-status");
 const docIdEl = document.getElementById("doc-id");
 const chatLog = document.getElementById("chat-log");
 const askForm = document.getElementById("ask-form");
 const questionInput = document.getElementById("question-input");
+
+const MAX_FILE_MB = 5;
 
 let currentDocId = null;
 
@@ -36,6 +39,22 @@ function appendMessage(role, text, sources) {
   chatLog.appendChild(wrapper);
   chatLog.scrollTop = chatLog.scrollHeight;
 }
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) {
+    fileName.textContent = "No file selected";
+    return;
+  }
+  const sizeMb = file.size / (1024 * 1024);
+  if (sizeMb > MAX_FILE_MB) {
+    setStatus(`File too large. Max ${MAX_FILE_MB} MB.`, true);
+    fileInput.value = "";
+    fileName.textContent = "No file selected";
+    return;
+  }
+  fileName.textContent = `${file.name} (${sizeMb.toFixed(2)} MB)`;
+});
 
 uploadForm.addEventListener("submit", async (event) => {
   event.preventDefault();

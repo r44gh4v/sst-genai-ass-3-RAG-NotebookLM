@@ -1,71 +1,74 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NotebookLM RAG</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <header class="hero">
-      <div>
-        <p class="eyebrow">Assignment 03</p>
-        <h1>NotebookLM RAG Lab</h1>
-        <p class="subtitle">
-          Upload a PDF or text file and ask grounded questions with lean token
-          usage.
-        </p>
-      </div>
-      <div class="badge">RAG pipeline ready</div>
+        <div>
+            <p class="eyebrow">Assignment 03</p>
+            <h1>NotebookLM RAG Lab</h1>
+            <p class="subtitle">
+                Upload a PDF or text file and ask grounded questions with lean token usage.
+            </p>
+        </div>
+        <div class="badge">RAG pipeline ready</div>
     </header>
 
     <main class="grid">
-      <section class="card" id="upload-card">
-        <h2>1. Upload a document</h2>
-        <p class="muted">
-          Supports PDF or plain text. Chunking and embeddings are optimized for
-          free-tier usage.
-        </p>
-        <form id="upload-form">
-          <input type="file" id="file-input" accept=".pdf,.txt" />
-          <button type="submit" class="primary">Index document</button>
-        </form>
-        <div class="status" id="upload-status">No document indexed yet.</div>
-        <div class="doc-meta">
-          <span>Doc ID</span>
-          <code id="doc-id">-</code>
-        </div>
-      </section>
+        <section class="card" id="upload-card">
+            <h2>1. Upload a document</h2>
+            <p class="muted">
+                Accepted: PDF or TXT. Max file size 5 MB.
+            </p>
+            <form id="upload-form">
+                <div class="file-picker">
+                    <input type="file" id="file-input" accept=".pdf,.txt" />
+                    <label class="file-button" for="file-input">Choose file</label>
+                    <div class="file-meta">
+                        <span class="file-name" id="file-name">No file selected</span>
+                        <span class="file-hint" id="file-hint">PDF or TXT, max 5 MB</span>
+                    </div>
+                </div>
+                <button type="submit" class="primary">Index document</button>
+            </form>
+            <div class="status" id="upload-status">No document indexed yet.</div>
+            <div class="doc-meta">
+                <span>Doc ID</span>
+                <code id="doc-id">-</code>
+            </div>
+        </section>
 
-      <section class="card" id="chat-card">
-        <h2>2. Ask questions</h2>
-        <div class="chat" id="chat-log"></div>
-        <form id="ask-form" class="ask">
-          <input
-            type="text"
-            id="question-input"
-            placeholder="Ask something from the document..."
-          />
-          <button type="submit" class="primary">Ask</button>
-        </form>
-        <p class="tiny">
-          Tip: short questions reduce tokens. Answers cite sources like [1].
-        </p>
-      </section>
+        <section class="card" id="chat-card">
+            <h2>2. Ask questions</h2>
+            <div class="chat" id="chat-log"></div>
+            <form id="ask-form" class="ask">
+                <input type="text" id="question-input" placeholder="Ask something from the document..." />
+                <button type="submit" class="primary">Ask</button>
+            </form>
+            <p class="tiny">
+                Tip: short questions reduce tokens. Answers cite sources like [1].
+            </p>
+        </section>
     </main>
 
     <footer class="footer">
-      <span>Built with Gemini (OpenAI-compatible), Qdrant, and Node.js.</span>
+        <span>Built with Gemini (OpenAI-compatible), Qdrant, and Node.js.</span>
     </footer>
 
     <script src="/app.js"></script>
-  </body>
+</body>
+
 </html>
