@@ -28,15 +28,15 @@
         <section class="card" id="upload-card">
             <h2>1. Upload a document</h2>
             <p class="muted">
-                PDF or txt. Max file size 5 MB
+                PDF, TXT, or CSV. Max file size 5 MB
             </p>
             <form id="upload-form">
                 <div class="file-picker">
-                    <input type="file" id="file-input" accept=".pdf,.txt" />
+                    <input type="file" id="file-input" accept=".pdf,.txt,.csv" />
                     <label class="file-button" for="file-input">Choose file</label>
                     <div class="file-meta">
                         <span class="file-name" id="file-name">No file selected</span>
-                        <span class="file-hint" id="file-hint">PDF or TXT, max 5 MB</span>
+                        <span class="file-hint" id="file-hint">PDF, TXT, or CSV, max 5 MB</span>
                     </div>
                 </div>
                 <button type="submit" class="primary">Index document</button>
@@ -60,10 +60,6 @@
             </p>
         </section>
     </main>
-
-    <footer class="footer">
-        <span>Built with Gemini (OpenAI-compatible), Qdrant, and Node.js.</span>
-    </footer>
 
     <script src="/app.js"></script>
 </body>

@@ -36,10 +36,16 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const allowed = ["application/pdf", "text/plain"];
+    const allowed = [
+      "application/pdf",
+      "text/plain",
+      "text/csv",
+      "application/csv",
+      "application/vnd.ms-excel"
+    ];
     if (!allowed.includes(file.mimetype)) {
       return res.status(400).json({
-        error: "Only PDF or plain text files are supported"
+        error: "Only PDF, TXT, or CSV files are supported"
       });
     }
 

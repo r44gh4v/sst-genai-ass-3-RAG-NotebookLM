@@ -8,7 +8,7 @@ ingestion -> chunking -> embeddings -> vector store -> retrieval -> generation.
 
 ## Features
 
-- Upload PDF or TXT
+- Upload PDF, TXT, or CSV
 - Chunking with overlap for recall
 - Embedding + storage in Qdrant Cloud
 - Retrieval constrained by document ID
@@ -77,7 +77,7 @@ Then open http://localhost:3000 in your browser.
 
 ## Usage
 
-1. Upload a PDF or TXT file.
+1. Upload a PDF, TXT, or CSV file.
 2. Copy the returned docId (shown in the UI).
 3. Ask questions in the chat panel.
 4. Answers are grounded and include citations like [1].

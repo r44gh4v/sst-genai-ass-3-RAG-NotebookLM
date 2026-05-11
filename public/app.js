@@ -86,7 +86,7 @@ uploadForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const file = fileInput.files[0];
   if (!file) {
-    setStatus("Select a PDF or text file first.", true);
+    setStatus("Select a PDF, TXT, or CSV file first.", true);
     return;
   }
 
