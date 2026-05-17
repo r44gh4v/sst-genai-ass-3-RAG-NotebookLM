@@ -65,19 +65,18 @@ export function getRerankClient() {
   return rerankClient;
 }
 
-export async function embedTexts(texts) {
+export async function embedTexts(texts, inputType) {
   assertKey(embeddingConfig.apiKey, "EMBEDDING_API_KEY or CHAT_API_KEY");
   if (!Array.isArray(texts) || texts.length === 0) {
     return [];
   }
-  const response = await embeddingClient.embeddings.create({
-    model: config.embeddingModel,
-    input: texts
-  });
+  const params = { model: config.embeddingModel, input: texts };
+  if (inputType) params.input_type = inputType;
+  const response = await embeddingClient.embeddings.create(params);
   return response.data.map((item) => item.embedding);
 }
 
 export async function embedQuery(text) {
-  const vectors = await embedTexts([text]);
+  const vectors = await embedTexts([text], config.embeddingQueryInputType);
   return vectors[0];
 }

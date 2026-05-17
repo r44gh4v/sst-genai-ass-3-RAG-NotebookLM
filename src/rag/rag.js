@@ -244,7 +244,7 @@ async function retrieveForQueries(docId, queries, topK) {
   if (!normalized.length) {
     return [];
   }
-  const embeddings = await embedTexts(normalized);
+  const embeddings = await embedTexts(normalized, config.embeddingQueryInputType);
   const merged = [];
   for (let i = 0; i < normalized.length; i += 1) {
     const vector = embeddings[i];
@@ -526,7 +526,7 @@ export async function indexDocument({ buffer, mimeType, originalName }) {
   const batchSize = Math.max(config.embeddingBatchSize, 1);
   for (let i = 0; i < chunkItems.length; i += batchSize) {
     const batch = chunkItems.slice(i, i + batchSize);
-    const embeddings = await embedTexts(batch.map((item) => item.text));
+    const embeddings = await embedTexts(batch.map((item) => item.text), config.embeddingPassageInputType);
     if (!vectorSize && embeddings[0]) {
       vectorSize = embeddings[0].length;
       await ensureCollection(vectorSize);

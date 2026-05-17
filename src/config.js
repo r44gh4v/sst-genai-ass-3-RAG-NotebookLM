@@ -22,6 +22,8 @@ export const config = {
   embeddingApiKey: process.env.EMBEDDING_API_KEY || "",
   embeddingBaseUrl: process.env.EMBEDDING_BASE_URL || "",
   embeddingModel: process.env.EMBEDDING_MODEL || "text-embedding-004",
+  embeddingPassageInputType: process.env.EMBEDDING_PASSAGE_INPUT_TYPE || null,
+  embeddingQueryInputType: process.env.EMBEDDING_QUERY_INPUT_TYPE || null,
   judgeApiKey: process.env.JUDGE_API_KEY || "",
   judgeBaseUrl: process.env.JUDGE_BASE_URL || "",
   judgeModel: process.env.JUDGE_MODEL || "gemini-1.5-flash",

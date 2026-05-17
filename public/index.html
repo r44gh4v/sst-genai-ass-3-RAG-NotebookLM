@@ -14,13 +14,6 @@
 </head>
 
 <body>
-    <!-- <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div> -->
-
-    <!-- <header class="hero">
-        
-    </header> -->
-
     <main class="layout">
 
         <!-- Left panel -->
@@ -29,20 +22,49 @@
             <!-- Upload section -->
             <section class="card" id="upload-card">
                 <h2>Upload document</h2>
-                <p class="muted">PDF, TXT, or CSV &middot; Max 5 MB</p>
+
                 <form id="upload-form">
-                    <div class="file-picker">
+                    <div class="file-picker" id="file-drop-zone">
                         <input type="file" id="file-input" accept=".pdf,.txt,.csv" />
-                        <label class="file-button" for="file-input">Choose file</label>
-                        <div class="file-meta">
-                            <span class="file-name" id="file-name">No file selected</span>
-                            <span class="file-hint" id="file-hint">PDF, TXT, or CSV &middot; max 5 MB</span>
+
+                        <!-- Drop zone (default state) -->
+                        <label class="drop-zone-content" id="drop-zone-content" for="file-input">
+                            <div class="drop-zone-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                            </div>
+                            <div class="drop-zone-text">
+                                <span>Drop file or <span class="browse-link">browse</span></span>
+                                <small>PDF, TXT, or CSV &middot; max 5 MB</small>
+                            </div>
+                        </label>
+
+                        <!-- File selected state (hidden by default) -->
+                        <div class="file-selected" id="file-selected">
+                            <span class="file-type-badge" id="file-type-badge">?</span>
+                            <div class="file-info">
+                                <span class="file-name" id="file-name">No file selected</span>
+                                <span class="file-size" id="file-size"></span>
+                            </div>
+                            <button type="button" class="file-clear-btn" id="file-clear" title="Remove file">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
+
                     <button type="submit" class="primary">Index document</button>
                 </form>
+
                 <div class="doc-meta">
-                    <span>Doc ID</span>
+                    <span class="doc-meta-label">Doc ID</span>
                     <code id="doc-id">&mdash;</code>
                 </div>
             </section>
