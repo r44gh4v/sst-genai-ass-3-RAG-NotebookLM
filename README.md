@@ -62,7 +62,7 @@ Minimum required:
 Optional but recommended:
 
 - `CHAT_BASE_URL` (default Gemini OpenAI-compatible endpoint)
-- `CHAT_MODEL` (default `gemini-1.5-flash`)
+- `CHAT_MODEL`
 - `EMBEDDING_MODEL` (default `text-embedding-004`)
 - `TOP_K`, `MAX_CONTEXT_CHARS`, `MAX_OUTPUT_TOKENS` for cost control
 
