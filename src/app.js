@@ -69,7 +69,7 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
 
 app.post("/api/ask", async (req, res) => {
   try {
-    const { docId, question } = req.body || {};
+    const { docId, question, options } = req.body || {};
     const trimmed = String(question || "").trim();
     if (!docId || !trimmed) {
       return res.status(400).json({
@@ -77,7 +77,12 @@ app.post("/api/ask", async (req, res) => {
       });
     }
 
-    const result = await answerQuestion({ docId, question: trimmed });
+    const safeOptions = options && typeof options === "object" ? options : undefined;
+    const result = await answerQuestion({
+      docId,
+      question: trimmed,
+      options: safeOptions
+    });
     return res.json(result);
   } catch (error) {
     return res.status(500).json({

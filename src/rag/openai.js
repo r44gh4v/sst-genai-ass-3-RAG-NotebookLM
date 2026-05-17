@@ -2,11 +2,17 @@ import OpenAI from "openai";
 import {
   config,
   resolveChatConfig,
-  resolveEmbeddingConfig
+  resolveEmbeddingConfig,
+  resolveJudgeConfig,
+  resolveRewriteConfig,
+  resolveRerankConfig
 } from "../config.js";
 
 const chatConfig = resolveChatConfig();
 const embeddingConfig = resolveEmbeddingConfig();
+const judgeConfig = resolveJudgeConfig();
+const rewriteConfig = resolveRewriteConfig();
+const rerankConfig = resolveRerankConfig();
 
 const chatClient = new OpenAI({
   apiKey: chatConfig.apiKey,
@@ -18,6 +24,21 @@ const embeddingClient = new OpenAI({
   baseURL: embeddingConfig.baseURL
 });
 
+const judgeClient = new OpenAI({
+  apiKey: judgeConfig.apiKey,
+  baseURL: judgeConfig.baseURL
+});
+
+const rewriteClient = new OpenAI({
+  apiKey: rewriteConfig.apiKey,
+  baseURL: rewriteConfig.baseURL
+});
+
+const rerankClient = new OpenAI({
+  apiKey: rerankConfig.apiKey,
+  baseURL: rerankConfig.baseURL
+});
+
 function assertKey(apiKey, label) {
   if (!apiKey) {
     throw new Error(`${label} is missing. Set it in your environment.`);
@@ -27,6 +48,21 @@ function assertKey(apiKey, label) {
 export function getChatClient() {
   assertKey(chatConfig.apiKey, "CHAT_API_KEY");
   return chatClient;
+}
+
+export function getJudgeClient() {
+  assertKey(judgeConfig.apiKey, "JUDGE_API_KEY or CHAT_API_KEY");
+  return judgeClient;
+}
+
+export function getRewriteClient() {
+  assertKey(rewriteConfig.apiKey, "REWRITE_API_KEY or CHAT_API_KEY");
+  return rewriteClient;
+}
+
+export function getRerankClient() {
+  assertKey(rerankConfig.apiKey, "RERANK_API_KEY or CHAT_API_KEY");
+  return rerankClient;
 }
 
 export async function embedTexts(texts) {

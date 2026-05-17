@@ -34,10 +34,10 @@ This project uses a recursive, overlap-based chunking strategy:
 
 ## Low-Request Defaults
 
-- Small retrieval k (default 3)
-- Context trimmed to a max character budget
+- Small retrieval k (default 5)
+- Context trimmed to a max character budget (default 8000 chars)
 - Single LLM call per question
-- Output tokens capped (default 350)
+- Output tokens capped (default 4000)
 - In-memory LRU cache for repeated questions
 
 ## Setup
@@ -62,9 +62,25 @@ Minimum required:
 Optional but recommended:
 
 - `CHAT_BASE_URL` (default Gemini OpenAI-compatible endpoint)
-- `CHAT_MODEL` (default `gemini-3-flash-preview`)
-- `EMBEDDING_MODEL` (default `gemini-embedding-2-preview`)
+- `CHAT_MODEL` (default `gemini-1.5-flash`)
+- `EMBEDDING_MODEL` (default `text-embedding-004`)
 - `TOP_K`, `MAX_CONTEXT_CHARS`, `MAX_OUTPUT_TOKENS` for cost control
+
+Corrective RAG (optional):
+
+- `CORRECTIVE_RAG_ENABLED` (default `true`)
+- `CORRECTIVE_RETRIES` (default `1`)
+- `CORRECTIVE_CONFIDENCE_THRESHOLD` (default `0.55`)
+- `CORRECTIVE_TOP_K` (default `10`)
+- `CORRECTIVE_REWRITE_COUNT` (default `1`)
+- `CORRECTIVE_RERANK` (default `true`)
+- `RERANK_TOP_N` (default `8`)
+- `RERANK_CHUNK_CHARS` (default `600`)
+- `JUDGE_MODEL`, `REWRITE_MODEL`, `RERANK_MODEL` (default `gemini-1.5-flash`)
+- `JUDGE_BASE_URL`, `REWRITE_BASE_URL`, `RERANK_BASE_URL` (defaults to `CHAT_BASE_URL`)
+- `JUDGE_API_KEY`, `REWRITE_API_KEY`, `RERANK_API_KEY` (defaults to `CHAT_API_KEY`)
+
+Note: corrective RAG adds extra model calls (judge, rewrite, rerank). Disable `CORRECTIVE_RAG_ENABLED` or set `CORRECTIVE_RETRIES=0` to minimize cost and latency.
 
 ## Run Locally
 

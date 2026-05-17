@@ -36,6 +36,44 @@ function renderSources(wrapper, sources) {
   wrapper.appendChild(sourceEl);
 }
 
+function renderMeta(wrapper, correction) {
+  const existing = wrapper.querySelector(".meta");
+  if (existing) {
+    existing.remove();
+  }
+  if (!correction || correction.enabled === false) {
+    return;
+  }
+  const parts = [];
+  if (typeof correction.confidence === "number") {
+    parts.push(`Confidence: ${correction.confidence.toFixed(2)}`);
+  }
+  if (typeof correction.threshold === "number") {
+    parts.push(`Threshold: ${correction.threshold.toFixed(2)}`);
+  }
+  parts.push(`Corrected: ${correction.corrected ? "yes" : "no"}`);
+  if (
+    typeof correction.retries === "number" &&
+    typeof correction.maxRetries === "number"
+  ) {
+    parts.push(`Retries: ${correction.retries}/${correction.maxRetries}`);
+  }
+  if (typeof correction.usedRerank === "boolean") {
+    parts.push(`Rerank: ${correction.usedRerank ? "yes" : "no"}`);
+  }
+  if (correction.rewrittenQuery) {
+    const shortened = correction.rewrittenQuery.slice(0, 140);
+    parts.push(`Rewrite: ${shortened}`);
+  }
+  if (!parts.length) {
+    return;
+  }
+  const metaEl = document.createElement("div");
+  metaEl.className = "meta";
+  metaEl.textContent = parts.join(" | ");
+  wrapper.appendChild(metaEl);
+}
+
 function appendMessage(role, text, sources, options = {}) {
   const wrapper = document.createElement("div");
   wrapper.className = `message ${role}`;
@@ -47,13 +85,14 @@ function appendMessage(role, text, sources, options = {}) {
   content.textContent = text;
   wrapper.appendChild(content);
   renderSources(wrapper, sources);
+  renderMeta(wrapper, options.correction);
 
   chatLog.appendChild(wrapper);
   chatLog.scrollTop = chatLog.scrollHeight;
   return wrapper;
 }
 
-function updateMessage(wrapper, text, sources) {
+function updateMessage(wrapper, text, sources, correction) {
   if (!wrapper) {
     return;
   }
@@ -62,6 +101,7 @@ function updateMessage(wrapper, text, sources) {
     content.textContent = text;
   }
   renderSources(wrapper, sources);
+  renderMeta(wrapper, correction);
   wrapper.classList.remove("pending");
   chatLog.scrollTop = chatLog.scrollHeight;
 }
@@ -150,7 +190,7 @@ askForm.addEventListener("submit", async (event) => {
     if (!response.ok) {
       throw new Error(data.error || "Failed to answer");
     }
-    updateMessage(pending, data.answer, data.citations);
+    updateMessage(pending, data.answer, data.citations, data.correction);
   } catch (error) {
     updateMessage(pending, error.message);
   }
