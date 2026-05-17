@@ -14,51 +14,82 @@
 </head>
 
 <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <header class="hero">
-        <div>
-            <p class="eyebrow">SST GenAI Assignment 3</p>
-            <h1>NotebookLM RAG Lab</h1>
-        </div>
-        <!-- <div class="badge">RAG pipeline ready</div> -->
-    </header>
+    <!-- <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div> -->
 
-    <main class="grid">
-        <section class="card" id="upload-card">
-            <h2>1. Upload a document</h2>
-            <p class="muted">
-                PDF, TXT, or CSV. Max file size 5 MB
-            </p>
-            <form id="upload-form">
-                <div class="file-picker">
-                    <input type="file" id="file-input" accept=".pdf,.txt,.csv" />
-                    <label class="file-button" for="file-input">Choose file</label>
-                    <div class="file-meta">
-                        <span class="file-name" id="file-name">No file selected</span>
-                        <span class="file-hint" id="file-hint">PDF, TXT, or CSV, max 5 MB</span>
+    <!-- <header class="hero">
+        
+    </header> -->
+
+    <main class="layout">
+
+        <!-- Left panel -->
+        <div class="left-panel">
+
+            <!-- Upload section -->
+            <section class="card" id="upload-card">
+                <h2>Upload document</h2>
+                <p class="muted">PDF, TXT, or CSV &middot; Max 5 MB</p>
+                <form id="upload-form">
+                    <div class="file-picker">
+                        <input type="file" id="file-input" accept=".pdf,.txt,.csv" />
+                        <label class="file-button" for="file-input">Choose file</label>
+                        <div class="file-meta">
+                            <span class="file-name" id="file-name">No file selected</span>
+                            <span class="file-hint" id="file-hint">PDF, TXT, or CSV &middot; max 5 MB</span>
+                        </div>
                     </div>
+                    <button type="submit" class="primary">Index document</button>
+                </form>
+                <div class="doc-meta">
+                    <span>Doc ID</span>
+                    <code id="doc-id">&mdash;</code>
                 </div>
-                <button type="submit" class="primary">Index document</button>
-            </form>
-            <div class="status" id="upload-status">No document indexed yet.</div>
-            <div class="doc-meta">
-                <span>Doc ID</span>
-                <code id="doc-id">-</code>
+            </section>
+
+            <!-- Activity log section -->
+            <section class="card" id="activity-card">
+                <h2>What is happening</h2>
+                <div id="activity-log">
+                    <div class="log-entry log-idle">Waiting for a document&hellip;</div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Right panel — chat -->
+        <section class="chat-panel" id="chat-card">
+            <div class="chat-header">
+                <h2>Ask questions</h2>
+                <p class="chat-sub" id="chat-subheading">Upload a document to get started</p>
+            </div>
+
+            <div class="chat" id="chat-log">
+                <div class="chat-empty">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <p>Your conversation will appear here.</p>
+                    <span class="empty-hint">Upload a document, then ask a question.</span>
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <form id="ask-form" class="ask">
+                    <input type="text" id="question-input"
+                        placeholder="Ask something about the document&hellip;" autocomplete="off" />
+                    <button type="submit" class="send-btn" title="Send">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </form>
             </div>
         </section>
 
-        <section class="card" id="chat-card">
-            <h2>2. Ask questions</h2>
-            <div class="chat" id="chat-log"></div>
-            <form id="ask-form" class="ask">
-                <input type="text" id="question-input" placeholder="Ask something from the document..." />
-                <button type="submit" class="primary">Ask</button>
-            </form>
-            <p class="tiny">
-                Tip: short questions reduce tokens. Answers cite sources like [1].
-            </p>
-        </section>
     </main>
 
     <script src="/app.js"></script>
