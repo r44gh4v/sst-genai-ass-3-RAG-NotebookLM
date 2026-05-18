@@ -239,7 +239,7 @@ uploadForm.addEventListener("submit", async (event) => {
     }
 
     chatSubheading.textContent = "Document ready - ask away";
-    appendMessage("assistant", "ヽ(o♡o)/ Ready! Ask a question about the document when you are ready :D");
+    appendMessage("assistant", "\\(^0^)/   READY! Ask me a question about the document");
   } catch (error) {
     logActivity(`Upload error: ${error.message}`, "error");
   }
