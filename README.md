@@ -13,7 +13,7 @@ The pipeline is explicit:
 - Embeddings via Google Gemini (`gemini-embedding-2`)
 - Vector storage and retrieval in Qdrant Cloud, constrained by document ID
 - Grounded answers with inline citations from NVIDIA NIM (`llama-3.3-70b-instruct`)
-- **Corrective RAG** — judge scores confidence, rewrites the query, re-retrieves, and reranks before retrying
+- **Corrective RAG** - judge scores confidence, rewrites the query, re-retrieves, and reranks before retrying
 - In-memory LRU answer cache for repeated questions
 - Cost controls: small k, context cap, output cap
 
@@ -21,9 +21,9 @@ The pipeline is explicit:
 
 When enabled (default), each answer goes through a verification loop:
 
-1. **Retrieve** — embed the question, pull top-k chunks from Qdrant
-2. **Generate** — LLM produces a grounded answer
-3. **Judge** — a second LLM call scores confidence (0–1) and answerability
+1. **Retrieve** - embed the question, pull top-k chunks from Qdrant
+2. **Generate** - LLM produces a grounded answer
+3. **Judge** - a second LLM call scores confidence (0-1) and answerability
 4. **If confidence < threshold** → **Rewrite** the query, re-retrieve with expanded k, **Rerank** the merged results, regenerate
 5. Final answer, confidence score, and pipeline metadata are returned alongside citations
 
@@ -32,9 +32,9 @@ All corrective stages (judge, rewrite, rerank) fall back to the same NVIDIA NIM 
 ## Tech Stack
 
 - Node.js + Express (served via Vercel Serverless Function)
-- Qdrant Cloud — vector database
-- NVIDIA NIM — chat, judge, rewrite, rerank (`llama-3.3-70b-instruct` / `llama-3.1-8b-instruct`)
-- Google Gemini — embeddings only (`gemini-embedding-2`)
+- Qdrant Cloud - vector database
+- NVIDIA NIM - chat, judge, rewrite, rerank (`llama-3.3-70b-instruct` / `llama-3.1-8b-instruct`)
+- Google Gemini - embeddings only (`gemini-embedding-2`)
 - OpenAI-compatible client for all LLM and embedding calls
 - In-memory LRU cache
 
@@ -51,8 +51,8 @@ Configuration is split into two files:
 
 | File | Contains |
 |---|---|
-| `.env` | Secrets only — API keys and the private Qdrant cluster URL |
-| `app.config.json` | Everything else — models, base URLs, RAG tuning, limits |
+| `.env` | Secrets only - API keys and the private Qdrant cluster URL |
+| `app.config.json` | Everything else - models, base URLs, RAG tuning, limits |
 
 ### Secrets (`.env`)
 
@@ -60,8 +60,8 @@ Copy `.env.example` to `.env` and fill in:
 
 | Variable | Required | Description |
 |---|---|---|
-| `CHAT_API_KEY` | Yes | NVIDIA NIM key (`nvapi-…`) — used for chat, judge, rewrite, rerank |
-| `EMBEDDING_API_KEY` | Yes | Google Gemini key — embeddings use a separate provider, no fallback |
+| `CHAT_API_KEY` | Yes | NVIDIA NIM key (`nvapi-…`) - used for chat, judge, rewrite, rerank |
+| `EMBEDDING_API_KEY` | Yes | Google Gemini key - embeddings use a separate provider, no fallback |
 | `QDRANT_URL` | Yes | Private Qdrant Cloud cluster endpoint |
 | `QDRANT_API_KEY` | Yes | Qdrant API key |
 | `JUDGE_API_KEY` | No | Falls back to `CHAT_API_KEY` |
@@ -98,9 +98,9 @@ To reduce cost and latency, set `corrective.enabled` to `false` or `corrective.r
 
 ## Setup
 
-1. Create a Qdrant Cloud cluster — the free tier works.
-2. Get a free NVIDIA NIM API key (`nvapi-…`) from https://build.nvidia.com — used for chat, judge, rewrite, and rerank.
-3. Get a Google Gemini API key from https://aistudio.google.com/apikey — used for embeddings only.
+1. Create a Qdrant Cloud cluster - the free tier works.
+2. Get a free NVIDIA NIM API key (`nvapi-…`) from https://build.nvidia.com - used for chat, judge, rewrite, and rerank.
+3. Get a Google Gemini API key from https://aistudio.google.com/apikey - used for embeddings only.
 4. Copy and fill the secrets file:
 
 ```bash
@@ -119,14 +119,14 @@ Open http://localhost:3000.
 ## Usage
 
 1. Upload a PDF, TXT, or CSV file and click **Index document**.
-2. Wait for indexing to complete — the Doc ID appears and the chat panel activates.
+2. Wait for indexing to complete - the Doc ID appears and the chat panel activates.
 3. Type a question and press Send.
 4. Answers are grounded in the document and include inline citations like `[1]`.
-5. The **What is happening** panel shows live pipeline steps — retrieval, judge confidence, rewrite, rerank.
+5. The **What is happening** panel shows live pipeline steps - retrieval, judge confidence, rewrite, rerank.
 
 ## Manual Test Checklist
 
-- Upload a PDF and ask 3–5 questions; verify answers cite sources.
+- Upload a PDF and ask 3-5 questions; verify answers cite sources.
 - Upload a TXT or CSV and repeat.
 - Ask something not in the document; verify the model refuses with "I could not find that."
 - Repeat a question and confirm `cached: true` appears in the pipeline log.
