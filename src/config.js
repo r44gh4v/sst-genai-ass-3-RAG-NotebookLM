@@ -1,66 +1,64 @@
 import "dotenv/config";
+import { readFileSync } from "node:fs";
 
-const toInt = (value, fallback) => {
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
+const appConfig = JSON.parse(
+  readFileSync(new URL("../app.config.json", import.meta.url), "utf8")
+);
 
-const toFloat = (value, fallback) => {
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
+// Secrets come from .env; everything else from app.config.json.
 export const config = {
-  port: toInt(process.env.PORT, 3000),
-  chatApiKey:
-    process.env.CHAT_API_KEY || process.env.OPENAI_API_KEY || "",
-  chatBaseUrl:
-    process.env.CHAT_BASE_URL ||
-    process.env.OPENAI_BASE_URL ||
-    "https://generativelanguage.googleapis.com/v1beta/openai/",
-  chatModel: process.env.CHAT_MODEL || "gemini-1.5-flash",
+  port: appConfig.server.port,
+
+  chatApiKey: process.env.CHAT_API_KEY || "",
+  chatBaseUrl: appConfig.chat.baseUrl,
+  chatModel: appConfig.chat.model,
+
   embeddingApiKey: process.env.EMBEDDING_API_KEY || "",
-  embeddingBaseUrl: process.env.EMBEDDING_BASE_URL || "",
-  embeddingModel: process.env.EMBEDDING_MODEL || "text-embedding-004",
-  embeddingPassageInputType: process.env.EMBEDDING_PASSAGE_INPUT_TYPE || null,
-  embeddingQueryInputType: process.env.EMBEDDING_QUERY_INPUT_TYPE || null,
+  embeddingBaseUrl: appConfig.embedding.baseUrl,
+  embeddingModel: appConfig.embedding.model,
+  embeddingPassageInputType: appConfig.embedding.passageInputType || null,
+  embeddingQueryInputType: appConfig.embedding.queryInputType || null,
+
   judgeApiKey: process.env.JUDGE_API_KEY || "",
-  judgeBaseUrl: process.env.JUDGE_BASE_URL || "",
-  judgeModel: process.env.JUDGE_MODEL || "gemini-1.5-flash",
-  judgeMaxTokens: toInt(process.env.JUDGE_MAX_TOKENS, 300),
+  judgeBaseUrl: appConfig.judge.baseUrl,
+  judgeModel: appConfig.judge.model,
+  judgeMaxTokens: appConfig.judge.maxTokens,
+
   rewriteApiKey: process.env.REWRITE_API_KEY || "",
-  rewriteBaseUrl: process.env.REWRITE_BASE_URL || "",
-  rewriteModel: process.env.REWRITE_MODEL || "gemini-1.5-flash",
-  rewriteMaxTokens: toInt(process.env.REWRITE_MAX_TOKENS, 200),
+  rewriteBaseUrl: appConfig.rewrite.baseUrl,
+  rewriteModel: appConfig.rewrite.model,
+  rewriteMaxTokens: appConfig.rewrite.maxTokens,
+
   rerankApiKey: process.env.RERANK_API_KEY || "",
-  rerankBaseUrl: process.env.RERANK_BASE_URL || "",
-  rerankModel: process.env.RERANK_MODEL || "gemini-1.5-flash",
-  rerankMaxTokens: toInt(process.env.RERANK_MAX_TOKENS, 400),
+  rerankBaseUrl: appConfig.rerank.baseUrl,
+  rerankModel: appConfig.rerank.model,
+  rerankMaxTokens: appConfig.rerank.maxTokens,
+
   qdrantUrl: process.env.QDRANT_URL || "",
   qdrantApiKey: process.env.QDRANT_API_KEY || "",
-  qdrantCollection: process.env.QDRANT_COLLECTION || "notebooklm_rag",
-  chunkSize: toInt(process.env.CHUNK_SIZE, 900),
-  chunkOverlap: toInt(process.env.CHUNK_OVERLAP, 150),
-  maxChunks: toInt(process.env.MAX_CHUNKS, 300),
-  embeddingBatchSize: toInt(process.env.EMBEDDING_BATCH_SIZE, 32),
-  topK: toInt(process.env.TOP_K, 5),
-  maxContextChars: toInt(process.env.MAX_CONTEXT_CHARS, 8000),
-  maxChunkChars: toInt(process.env.MAX_CHUNK_CHARS, 2000),
-  maxOutputTokens: toInt(process.env.MAX_OUTPUT_TOKENS, 4000),
-  correctiveEnabled: process.env.CORRECTIVE_RAG_ENABLED !== "false",
-  correctiveRetries: toInt(process.env.CORRECTIVE_RETRIES, 1),
-  correctiveConfidenceThreshold: toFloat(
-    process.env.CORRECTIVE_CONFIDENCE_THRESHOLD,
-    0.55
-  ),
-  correctiveTopK: toInt(process.env.CORRECTIVE_TOP_K, 10),
-  correctiveRewriteCount: toInt(process.env.CORRECTIVE_REWRITE_COUNT, 1),
-  correctiveRerank: process.env.CORRECTIVE_RERANK !== "false",
-  rerankTopN: toInt(process.env.RERANK_TOP_N, 8),
-  rerankChunkChars: toInt(process.env.RERANK_CHUNK_CHARS, 600),
-  cacheTtlMs: toInt(process.env.CACHE_TTL_MS, 600000),
-  cacheMax: toInt(process.env.CACHE_MAX, 100),
-  maxFileMb: toInt(process.env.MAX_FILE_MB, 5)
+  qdrantCollection: appConfig.qdrant.collection,
+
+  chunkSize: appConfig.rag.chunkSize,
+  chunkOverlap: appConfig.rag.chunkOverlap,
+  maxChunks: appConfig.rag.maxChunks,
+  embeddingBatchSize: appConfig.rag.embeddingBatchSize,
+  topK: appConfig.rag.topK,
+  maxContextChars: appConfig.rag.maxContextChars,
+  maxChunkChars: appConfig.rag.maxChunkChars,
+  maxOutputTokens: appConfig.rag.maxOutputTokens,
+
+  correctiveEnabled: appConfig.corrective.enabled,
+  correctiveRetries: appConfig.corrective.retries,
+  correctiveConfidenceThreshold: appConfig.corrective.confidenceThreshold,
+  correctiveTopK: appConfig.corrective.topK,
+  correctiveRewriteCount: appConfig.corrective.rewriteCount,
+  correctiveRerank: appConfig.corrective.rerank,
+  rerankTopN: appConfig.corrective.rerankTopN,
+  rerankChunkChars: appConfig.corrective.rerankChunkChars,
+
+  cacheTtlMs: appConfig.cache.ttlMs,
+  cacheMax: appConfig.cache.max,
+  maxFileMb: appConfig.upload.maxFileMb
 };
 
 export const resolveChatConfig = () => ({
@@ -68,9 +66,10 @@ export const resolveChatConfig = () => ({
   baseURL: config.chatBaseUrl
 });
 
+// Embeddings use a different provider (Gemini), so no fallback to the chat key.
 export const resolveEmbeddingConfig = () => ({
-  apiKey: config.embeddingApiKey || config.chatApiKey,
-  baseURL: config.embeddingBaseUrl || config.chatBaseUrl
+  apiKey: config.embeddingApiKey,
+  baseURL: config.embeddingBaseUrl
 });
 
 export const resolveJudgeConfig = () => ({

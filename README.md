@@ -44,43 +44,52 @@ This project uses a recursive, overlap-based chunking strategy:
 
 1. Create a Qdrant Cloud cluster (free tier works).
 2. Get your Qdrant URL and API key.
-3. Get a Gemini API key from Google AI Studio.
-4. Copy the example env file and fill values:
+3. Get a free NVIDIA NIM API key (`nvapi-...`) from https://build.nvidia.com (used for chat, judge, rewrite, rerank).
+4. Get a Google Gemini API key from https://aistudio.google.com/apikey (used for embeddings only).
+5. Copy the example env file and fill values:
 
 ```bash
 cp .env.example .env
 ```
 
-## Environment Variables
+## Configuration
 
-Minimum required:
+Configuration is split in two:
 
-- `CHAT_API_KEY`
+- **`.env`** - secrets only (API keys + the private Qdrant cluster URL). Copy from `.env.example`.
+- **`app.config.json`** - all non-sensitive settings (models, base URLs, RAG tuning, corrective RAG behavior, cache, limits). Edit this file directly.
+
+### Secrets (`.env`)
+
+Required:
+
+- `CHAT_API_KEY` - NVIDIA NIM key (`nvapi-...`)
+- `EMBEDDING_API_KEY` - Google Gemini key (required; embeddings use a different provider, so there is **no fallback** to `CHAT_API_KEY`)
 - `QDRANT_URL`
 - `QDRANT_API_KEY`
 
-Optional but recommended:
+Optional (each falls back to `CHAT_API_KEY` when blank):
 
-- `CHAT_BASE_URL` (default Gemini OpenAI-compatible endpoint)
-- `CHAT_MODEL`
-- `EMBEDDING_MODEL` (default `text-embedding-004`)
-- `TOP_K`, `MAX_CONTEXT_CHARS`, `MAX_OUTPUT_TOKENS` for cost control
+- `JUDGE_API_KEY`, `REWRITE_API_KEY`, `RERANK_API_KEY`
 
-Corrective RAG (optional):
+### Models (`app.config.json`)
 
-- `CORRECTIVE_RAG_ENABLED` (default `true`)
-- `CORRECTIVE_RETRIES` (default `1`)
-- `CORRECTIVE_CONFIDENCE_THRESHOLD` (default `0.55`)
-- `CORRECTIVE_TOP_K` (default `10`)
-- `CORRECTIVE_REWRITE_COUNT` (default `1`)
-- `CORRECTIVE_RERANK` (default `true`)
-- `RERANK_TOP_N` (default `8`)
-- `RERANK_CHUNK_CHARS` (default `600`)
-- `JUDGE_MODEL`, `REWRITE_MODEL`, `RERANK_MODEL` (default `gemini-1.5-flash`)
-- `JUDGE_BASE_URL`, `REWRITE_BASE_URL`, `RERANK_BASE_URL` (defaults to `CHAT_BASE_URL`)
-- `JUDGE_API_KEY`, `REWRITE_API_KEY`, `RERANK_API_KEY` (defaults to `CHAT_API_KEY`)
+| Stage | Provider | Model |
+|---|---|---|
+| Chat (answers) | NVIDIA NIM | `meta/llama-3.3-70b-instruct` |
+| Judge (corrective RAG) | NVIDIA NIM | `meta/llama-3.3-70b-instruct` |
+| Rewrite | NVIDIA NIM | `meta/llama-3.1-8b-instruct` |
+| Rerank | NVIDIA NIM | `meta/llama-3.1-8b-instruct` |
+| Embeddings | Google Gemini | `gemini-embedding-001` |
 
-Note: corrective RAG adds extra model calls (judge, rewrite, rerank). Disable `CORRECTIVE_RAG_ENABLED` or set `CORRECTIVE_RETRIES=0` to minimize cost and latency.
+### Other settings (`app.config.json`)
+
+- `qdrant.collection` - Qdrant collection name
+- `rag` - `chunkSize`, `chunkOverlap`, `topK`, `maxContextChars`, `maxOutputTokens`, etc.
+- `corrective` - `enabled`, `retries`, `confidenceThreshold`, `topK`, `rewriteCount`, `rerank`, `rerankTopN`, `rerankChunkChars`
+- `cache`, `upload`, `server`
+
+Note: corrective RAG adds extra model calls (judge, rewrite, rerank). Set `corrective.enabled` to `false` or `corrective.retries` to `0` in `app.config.json` to minimize cost and latency.
 
 ## Run Locally
 

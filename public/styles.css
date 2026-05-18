@@ -16,8 +16,8 @@
 
   --accent:       #636B2F;   /* primary CTA */
   --accent-dark:  #3D4127;   /* button hover / darkest */
-  --accent-mid:   #BAC095;   /* sage — borders, badges */
-  --accent-pale:  #D4DE95;   /* light highlight — assistant bubble */
+  --accent-mid:   #BAC095;   /* sage - borders, badges */
+  --accent-pale:  #D4DE95;   /* light highlight - assistant bubble */
   --accent-glow:  rgba(99, 107, 47, 0.14);
 
   --line:         #C4CE78;   /* primary border */

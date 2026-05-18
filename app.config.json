@@ -1,0 +1,70 @@
+{
+    "server": {
+        "port": 3000
+    },
+
+    "chat": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "model": "meta/llama-3.3-70b-instruct"
+    },
+
+    "embedding": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "model": "gemini-embedding-2",
+        "passageInputType": null,
+        "queryInputType": null
+    },
+
+    "judge": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "model": "meta/llama-3.3-70b-instruct",
+        "maxTokens": 300
+    },
+
+    "rewrite": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "model": "meta/llama-3.1-8b-instruct",
+        "maxTokens": 200
+    },
+
+    "rerank": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "model": "meta/llama-3.1-8b-instruct",
+        "maxTokens": 400
+    },
+
+    "qdrant": {
+        "collection": "sst_genai_ass_3_rag_notebooklm"
+    },
+
+    "rag": {
+        "chunkSize": 900,
+        "chunkOverlap": 150,
+        "maxChunks": 300,
+        "embeddingBatchSize": 32,
+        "topK": 5,
+        "maxContextChars": 8000,
+        "maxChunkChars": 2000,
+        "maxOutputTokens": 4000
+    },
+
+    "corrective": {
+        "enabled": true,
+        "retries": 1,
+        "confidenceThreshold": 0.55,
+        "topK": 10,
+        "rewriteCount": 1,
+        "rerank": true,
+        "rerankTopN": 8,
+        "rerankChunkChars": 600
+    },
+
+    "cache": {
+        "ttlMs": 600000,
+        "max": 100
+    },
+    
+    "upload": {
+        "maxFileMb": 5
+    }
+}

@@ -66,7 +66,7 @@ export function getRerankClient() {
 }
 
 export async function embedTexts(texts, inputType) {
-  assertKey(embeddingConfig.apiKey, "EMBEDDING_API_KEY or CHAT_API_KEY");
+  assertKey(embeddingConfig.apiKey, "EMBEDDING_API_KEY (Google Gemini key)");
   if (!Array.isArray(texts) || texts.length === 0) {
     return [];
   }

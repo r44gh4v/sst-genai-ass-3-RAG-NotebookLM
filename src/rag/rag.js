@@ -262,7 +262,7 @@ async function generateAnswer(question, contextText) {
     "You are a document Q&A assistant. " +
     "Answer ONLY using the context provided below. " +
     "If the answer is not in the context, say: 'I could not find that in the document.' " +
-    "Always write complete, grammatically correct sentences — never stop mid-sentence or end a response with a comma. " +
+    "Always write complete, grammatically correct sentences - never stop mid-sentence or end a response with a comma. " +
     "Cite evidence inline using [1], [2], etc.";
 
   const chatClient = getChatClient();
