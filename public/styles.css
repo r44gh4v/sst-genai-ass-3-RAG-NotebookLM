@@ -339,7 +339,7 @@ button {
 
 .log-idle {
   color: var(--muted-light);
-  font-style: italic;
+  /* font-style: italic; */
   padding: 4px 2px;
 }
 
