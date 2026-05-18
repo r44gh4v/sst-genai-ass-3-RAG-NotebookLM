@@ -1,115 +1,133 @@
 # SST GenAI NotebookLM RAG (Assignment 3)
 
-A minimal RAG app that lets a user upload a PDF or plain text file and ask grounded questions. 
+A minimal RAG app that lets a user upload a PDF, TXT, or CSV file and ask grounded questions about it.
 
-The pipeline is explicit: 
+The pipeline is explicit:
 
-ingestion -> chunking -> embeddings -> vector store -> retrieval -> generation.
+**ingestion → chunking → embeddings → vector store → retrieval → generation → (corrective loop)**
 
 ## Features
 
-- Upload PDF, TXT, or CSV
-- Chunking with overlap for recall
-- Embedding + storage in Qdrant Cloud
-- Retrieval constrained by document ID
-- Gemini via OpenAI-compatible API for answers
-- Grounded answers with citations
-- Low token usage controls (small k, context cap, output cap, cache)
+- Upload PDF, TXT, or CSV (up to 5 MB)
+- Recursive overlap-based chunking for recall
+- Embeddings via Google Gemini (`gemini-embedding-2`)
+- Vector storage and retrieval in Qdrant Cloud, constrained by document ID
+- Grounded answers with inline citations from NVIDIA NIM (`llama-3.3-70b-instruct`)
+- **Corrective RAG** — judge scores confidence, rewrites the query, re-retrieves, and reranks before retrying
+- In-memory LRU answer cache for repeated questions
+- Cost controls: small k, context cap, output cap
+
+## Corrective RAG Pipeline
+
+When enabled (default), each answer goes through a verification loop:
+
+1. **Retrieve** — embed the question, pull top-k chunks from Qdrant
+2. **Generate** — LLM produces a grounded answer
+3. **Judge** — a second LLM call scores confidence (0–1) and answerability
+4. **If confidence < threshold** → **Rewrite** the query, re-retrieve with expanded k, **Rerank** the merged results, regenerate
+5. Final answer, confidence score, and pipeline metadata are returned alongside citations
+
+All corrective stages (judge, rewrite, rerank) fall back to the same NVIDIA NIM key and base URL as the chat stage unless overridden.
 
 ## Tech Stack
 
-- Node.js + Express
-- Qdrant Cloud (vector DB)
-- OpenAI-compatible client (Gemini by default)
-- Simple web UI
+- Node.js + Express (served via Vercel Serverless Function)
+- Qdrant Cloud — vector database
+- NVIDIA NIM — chat, judge, rewrite, rerank (`llama-3.3-70b-instruct` / `llama-3.1-8b-instruct`)
+- Google Gemini — embeddings only (`gemini-embedding-2`)
+- OpenAI-compatible client for all LLM and embedding calls
+- In-memory LRU cache
 
 ## Chunking Strategy
 
-This project uses a recursive, overlap-based chunking strategy:
-
 - Fixed chunk size with overlap (defaults: 900 chars, 150 overlap)
 - Prefer splitting on paragraph and sentence boundaries
-- Deduplicate identical chunks
-- Cap total chunks per document to protect free tiers
-
-## Low-Request Defaults
-
-- Small retrieval k (default 5)
-- Context trimmed to a max character budget (default 8000 chars)
-- Single LLM call per question
-- Output tokens capped (default 4000)
-- In-memory LRU cache for repeated questions
-
-## Setup
-
-1. Create a Qdrant Cloud cluster (free tier works).
-2. Get your Qdrant URL and API key.
-3. Get a free NVIDIA NIM API key (`nvapi-...`) from https://build.nvidia.com (used for chat, judge, rewrite, rerank).
-4. Get a Google Gemini API key from https://aistudio.google.com/apikey (used for embeddings only).
-5. Copy the example env file and fill values:
-
-```bash
-cp .env.example .env
-```
+- Deduplicate identical chunks within a document
+- Cap total chunks per document to protect free-tier quotas
 
 ## Configuration
 
-Configuration is split in two:
+Configuration is split into two files:
 
-- **`.env`** - secrets only (API keys + the private Qdrant cluster URL). Copy from `.env.example`.
-- **`app.config.json`** - all non-sensitive settings (models, base URLs, RAG tuning, corrective RAG behavior, cache, limits). Edit this file directly.
+| File | Contains |
+|---|---|
+| `.env` | Secrets only — API keys and the private Qdrant cluster URL |
+| `app.config.json` | Everything else — models, base URLs, RAG tuning, limits |
 
 ### Secrets (`.env`)
 
-Required:
+Copy `.env.example` to `.env` and fill in:
 
-- `CHAT_API_KEY` - NVIDIA NIM key (`nvapi-...`)
-- `EMBEDDING_API_KEY` - Google Gemini key (required; embeddings use a different provider, so there is **no fallback** to `CHAT_API_KEY`)
-- `QDRANT_URL`
-- `QDRANT_API_KEY`
-
-Optional (each falls back to `CHAT_API_KEY` when blank):
-
-- `JUDGE_API_KEY`, `REWRITE_API_KEY`, `RERANK_API_KEY`
+| Variable | Required | Description |
+|---|---|---|
+| `CHAT_API_KEY` | Yes | NVIDIA NIM key (`nvapi-…`) — used for chat, judge, rewrite, rerank |
+| `EMBEDDING_API_KEY` | Yes | Google Gemini key — embeddings use a separate provider, no fallback |
+| `QDRANT_URL` | Yes | Private Qdrant Cloud cluster endpoint |
+| `QDRANT_API_KEY` | Yes | Qdrant API key |
+| `JUDGE_API_KEY` | No | Falls back to `CHAT_API_KEY` |
+| `REWRITE_API_KEY` | No | Falls back to `CHAT_API_KEY` |
+| `RERANK_API_KEY` | No | Falls back to `CHAT_API_KEY` |
 
 ### Models (`app.config.json`)
 
 | Stage | Provider | Model |
 |---|---|---|
 | Chat (answers) | NVIDIA NIM | `meta/llama-3.3-70b-instruct` |
-| Judge (corrective RAG) | NVIDIA NIM | `meta/llama-3.3-70b-instruct` |
+| Judge | NVIDIA NIM | `meta/llama-3.3-70b-instruct` |
 | Rewrite | NVIDIA NIM | `meta/llama-3.1-8b-instruct` |
 | Rerank | NVIDIA NIM | `meta/llama-3.1-8b-instruct` |
-| Embeddings | Google Gemini | `gemini-embedding-001` |
+| Embeddings | Google Gemini | `gemini-embedding-2` |
 
 ### Other settings (`app.config.json`)
 
-- `qdrant.collection` - Qdrant collection name
-- `rag` - `chunkSize`, `chunkOverlap`, `topK`, `maxContextChars`, `maxOutputTokens`, etc.
-- `corrective` - `enabled`, `retries`, `confidenceThreshold`, `topK`, `rewriteCount`, `rerank`, `rerankTopN`, `rerankChunkChars`
-- `cache`, `upload`, `server`
+| Key | Default | Description |
+|---|---|---|
+| `rag.chunkSize` | `900` | Characters per chunk |
+| `rag.chunkOverlap` | `150` | Overlap between chunks |
+| `rag.topK` | `5` | Chunks retrieved per question |
+| `rag.maxContextChars` | `8000` | Total context budget fed to the LLM |
+| `rag.maxOutputTokens` | `4000` | Max tokens in the answer |
+| `corrective.enabled` | `true` | Toggle the corrective RAG loop |
+| `corrective.retries` | `1` | Max correction attempts |
+| `corrective.confidenceThreshold` | `0.55` | Judge score below which a retry is triggered |
+| `corrective.rerank` | `true` | Rerank merged results before retry |
+| `cache.ttlMs` | `600000` | Answer cache TTL (10 min) |
+| `upload.maxFileMb` | `5` | Max upload size |
 
-Note: corrective RAG adds extra model calls (judge, rewrite, rerank). Set `corrective.enabled` to `false` or `corrective.retries` to `0` in `app.config.json` to minimize cost and latency.
+To reduce cost and latency, set `corrective.enabled` to `false` or `corrective.retries` to `0`.
 
-## Run Locally
+## Setup
+
+1. Create a Qdrant Cloud cluster — the free tier works.
+2. Get a free NVIDIA NIM API key (`nvapi-…`) from https://build.nvidia.com — used for chat, judge, rewrite, and rerank.
+3. Get a Google Gemini API key from https://aistudio.google.com/apikey — used for embeddings only.
+4. Copy and fill the secrets file:
+
+```bash
+cp .env.example .env
+```
+
+5. Install dependencies and start:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open http://localhost:3000 in your browser.
+Open http://localhost:3000.
 
 ## Usage
 
-1. Upload a PDF, TXT, or CSV file.
-2. Copy the returned docId (shown in the UI).
-3. Ask questions in the chat panel.
-4. Answers are grounded and include citations like [1].
+1. Upload a PDF, TXT, or CSV file and click **Index document**.
+2. Wait for indexing to complete — the Doc ID appears and the chat panel activates.
+3. Type a question and press Send.
+4. Answers are grounded in the document and include inline citations like `[1]`.
+5. The **What is happening** panel shows live pipeline steps — retrieval, judge confidence, rewrite, rerank.
 
 ## Manual Test Checklist
 
-- Upload a PDF and ask 3 to 5 questions.
-- Upload a text file and repeat.
-- Confirm that answers cite sources and refuse missing info.
-- Repeat one question to confirm cache hits (no extra LLM call).
+- Upload a PDF and ask 3–5 questions; verify answers cite sources.
+- Upload a TXT or CSV and repeat.
+- Ask something not in the document; verify the model refuses with "I could not find that."
+- Repeat a question and confirm `cached: true` appears in the pipeline log.
+- Check the corrective RAG metadata (confidence, rerank, rewrite) in the activity log.
