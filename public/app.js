@@ -41,6 +41,7 @@ function logActivity(message, type = "info") {
   timeEl.textContent = timeStr;
 
   const msgEl = document.createElement("span");
+  msgEl.className = "log-msg";
   msgEl.textContent = message;
 
   entry.appendChild(timeEl);
